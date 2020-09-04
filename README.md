@@ -1,4 +1,4 @@
-# Futter and Laravel
+# Flutter and Laravel
 
 A new Flutter project with Larave using laravel websocket to listen to public channel.
 
