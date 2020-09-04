@@ -1,0 +1,85 @@
+guide to install websocket server
+https://beyondco.de/docs/laravel-websockets/getting-started/installation
+
+-> composer require beyondcode/laravel-websockets
+-> php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="migrations"
+-> php artisan migrate
+-> php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="config"
+::now we have websocket config file
+::look .env file
+::for start server php artisan websockets:serve
+::to open statistics http://localhost/web/socket/public/laravel-websockets
+-> this is all you need to start
+
+we also will install pusher
+-> composer require pusher/pusher-php-server "~4.0"
+::then goto broadcast config update pusher configuration
+
+
+lets to start to make event
+-> php artisan make:event NewMessage
+::make test??? ok open tinker and then write event(new App\Events\NewMessage("hello zaid"))
+
+and then we will setup client side
+::we will use laravel echo javascript library
+->npm install
+::then install two package laravel echo and pusher
+-> npm install laravel-echo pusher-js
+::and then uncomment laravel echo in bootstrap js resource and update
+->npm run dev
+::then go view to listen to event
+
+::make echo like this to work
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: process.env.MIX_PUSHER_APP_KEY,
+    wsHost: '127.0.0.1',// window.location.hostname,
+    wsPort: 6001,
+    wssPort: 6001,//then added
+    forceTLS: false,//then added
+    cluster:  process.env.MIX_PUSHER_APP_CLUSTER,
+    disableStats: true,
+    scheme: 'http',
+    // encrypted: true,
+    transports: ['websocket', 'polling', 'flashsocket'],
+    enabledTransports: ['ws', 'wss'],
+    disabledTransports: ['sockjs', 'xhr_polling', 'xhr_streaming']
+});
+and in the broadcast
+ 'pusher' => [
+            'driver' => 'pusher',//we just use pusher api not pusher
+            'key' => env('PUSHER_APP_KEY'),
+            'secret' => env('PUSHER_APP_SECRET'),
+            'app_id' => env('PUSHER_APP_ID'),
+            'options' => [
+                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'useTLS' => false,//new  //we not using https so we will make comment
+//                'encryption'=>false,//this is before
+                'host' =>'127.0.0.1',
+                'port' => 6001,//port that we will use
+                'scheme'=>'http',//https if we use ssl
+            ],
+        ],
+
+
+
+if need token you will send like this in laravel echo
+ auth:{
+        headers:{
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+
+
+
+
+now it is time to make passport api with laravel
+
+->composer require laravel/passport
+->php artisan migrate
+->php artisan passport:install
+
+
+
+
